@@ -1,6 +1,5 @@
 import time 
 import numpy as np
-import torch 
 from copy import deepcopy
 
 class Adam(object):
@@ -11,30 +10,34 @@ class Adam(object):
         self.eps = eps
 
         self.t = 0
-        self.m = []
-        self.v = []
-
-        for p in params:
-            self.m.append(torch.zeros_like(p, dtype=torch.float32))
-            self.v.append(torch.zeros_like(p, dtype=torch.float32))
+        self.m = [np.zeros_like(p) for p in params]
+        self.v = [np.zeros_like(p) for p in params]
 
         self.truncate = truncate
 
     def update(self, params, grads):
         self.t += 1
         lr_t = self.lr * np.sqrt(1.0 - self.b2 ** self.t) / (1.0 - self.b1 ** self.t)
-            
-        # update the parameters        
+
+        # computing the quantile for params 
+        if self.truncate > 0.0 and self.t % 10 == 1:
+            tmp = np.array([])
+            for i, layer in enumerate(params):
+                # flatten the weights
+                tmp = np.concatenate((tmp, layer.flatten()))
+            quantile = np.quantile(np.abs(tmp), self.truncate)
+
+        # update the parameters
         for i, (p, g) in enumerate(zip(params, grads)):
             self.m[i] += (1 - self.b1) * (g - self.m[i])
             self.v[i] += (1 - self.b2) * (g * g - self.v[i])
-            
-            p.data += lr_t * self.m[i] / (np.sqrt(self.v[i]) + self.eps)
-            
-            # truncate the weights for the only 4-th layer (6 x 13824)
-            if self.truncate > 0.0 and i == 4:
-                quantile = np.quantile(p.data.view(-1).detach().numpy(), self.truncate)
-                p.data[torch.abs(p.data) < quantile] = 0.0                
+
+            p += lr_t * self.m[i] / (np.sqrt(self.v[i]) + self.eps)
+
+            # truncate the weights for the three linear layers
+            if self.truncate > 0.0 and self.t % 10 == 1:
+                p[np.abs(p) < quantile] = 0.0
+
 
 class NES_Trainer:
     def __init__(self, agent, learning_rate, noise_std, \
@@ -50,7 +53,7 @@ class NES_Trainer:
 
         self.norm_rewards = norm_rewards
 
-        self.optimizer = Adam(self.agent.parameters(recurse=True), lr=learning_rate, truncate=truncate)
+        self.optimizer = Adam(self.agent.W, lr=learning_rate, truncate=truncate)
         self._population = None
         self._count = 0
 
@@ -60,19 +63,24 @@ class NES_Trainer:
 
         return self._noise_std * step_decay
 
+    # @property
+    # def lr(self):
+    #     step_decay = np.power(self.lr_decay, np.floor((1 + self._count) / self.decay_step))
+
+    #     return self._lr * step_decay
 
     def generate_population(self, npop=50):
         self._population = []
 
         for i in range(npop):
             new_agent = deepcopy(self.agent)
-            new_agent.E = [] 
+            new_agent.E = []
 
-            for i, layer in enumerate(new_agent.parameters()):
-                noise = torch.randn(size=layer.shape, dtype=torch.float32)
+            for i, layer in enumerate(new_agent.W):
+                noise = np.random.randn(layer.shape[0], layer.shape[1])
                 new_agent.E.append(noise)
-                layer.data = layer.data + self.noise_std * noise
-
+                new_agent.W[i] = new_agent.W[i] + self.noise_std * noise
+ 
             self._population.append(new_agent)
 
         return self._population
@@ -83,21 +91,26 @@ class NES_Trainer:
 
         if reward_process == 'standardize':
             rewards = (rewards - rewards.mean()) / (rewards.std() + 1e-5)
-
         elif reward_process == 'centered_rank':
             rewards = self.compute_centered_ranks(rewards)
         
-        # compute the gradient for each layer 
+        # for i, layer in enumerate(self.agent.W):
+        #     w_updates = np.zeros_like(layer)
+        #     for j, explore_agent in enumerate(self._population):
+        #         w_updates = w_updates + (explore_agent.E[i] * rewards[j])
+        #     self.agent.W[i] = self.agent.W[i] + (self.lr / (len(rewards) * self.noise_std)) * w_updates
+
+        # compute the gradient for each leyer 
+        start = time.time()
         gradients = []
-        for i, layer in enumerate(self.agent.parameters()):
-            # create a matrix to store the gradient for each agent using torch 
-            w_updates = torch.zeros_like(layer, dtype=torch.float32)
+        for i, layer in enumerate(self.agent.W):
+            w_updates = np.zeros_like(layer)
             for j, explore_agent in enumerate(self._population):
                 w_updates = w_updates + (explore_agent.E[i] * rewards[j])
             w_updates /= len(rewards) * self.noise_std
             gradients.append(w_updates)
         # update the weights by using optimizer
-        self.optimizer.update(params=self.agent.parameters(), grads=gradients)
+        self.optimizer.update(params=self.agent.W, grads=gradients)
         self._count = self._count + 1
 
     def get_agent(self):
