@@ -1,13 +1,26 @@
-import numpy as np 
+import os 
+import numpy as np
 import pandas as pd 
+import matplotlib.pyplot as plt
 
-LOG_DIR = 'logs/'
-env_list = ['AtlantisNoFrameskip', 'BattleZoneNoFrameskip', 'BreakoutNoFrameskip', 'PongNoFrameskip', 'QbertNoFrameskip', 'SkiingNoFrameskip', 
-            'VentureNoFrameskip', 'ZaxxonNoFrameskip']
-setting = 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|'
-setting = 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|'
 
-for env in env_list:
-    file_name = LOG_DIR + setting + '_' + env + '-v4_seed0.csv'
-    data = pd.read_csv(file_name)[-10:]
-    print(env, data['mean_reward'].mean())
+log_dir = './logs/'
+
+exp_name_list = ['red5.0|ht0.9|sigma_1.0_Walker2d', 'red10.0|ht0.9|sigma_1.0_Walker2d', 'red20.0|ht0.9|sigma_1.0_Walker2d',
+            'red5.0|ht0.9|sigma_1.0_Hopper', 'red10.0|ht0.9|sigma_1.0_Hopper', 'red20.0|ht0.9|sigma_1.0_Hopper',
+            'red5.0|ht0.9|sigma_1.0_HalfCheetah', 'red10.0|ht0.9|sigma_1.0_HalfCheetah', 'red20.0|ht0.9|sigma_1.0_HalfCheetah']
+
+
+def extract_results_for(exp_name, file_name_list):
+    exp_result = []
+    for file_name in file_name_list:
+        if exp_name in file_name:
+            data = pd.read_csv(log_dir + file_name)
+            exp_result.append(data['mean_reward'].values)
+    return np.array(exp_result).mean(axis=0)[-10:].mean()
+
+file_name_list = os.listdir(log_dir)
+# filter out the files that are not related to the experiment
+
+for exp_name in exp_name_list:
+    print(exp_name, np.mean(extract_results_for(exp_name, file_name_list)))
