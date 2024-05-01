@@ -1,36 +1,25 @@
+# learning rate for hopper-v3: 0.1
+# for slurm cluster
+ 
+sigma=1.0
+n_jobs=100 
+for seed in 1..20
+do
+for red in 5 10 20 
+do
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'Hopper-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.0 --sigma $sigma --exp_name 'red20.0|ht0.0|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'Hopper-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.7 --sigma $sigma --exp_name 'red20.0|ht0.7|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'Hopper-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.9 --sigma $sigma --exp_name 'red20.0|ht0.9|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'Hopper-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.95 --sigma $sigma --exp_name 'red20.0|ht0.95|sigma' --reward_process 'centered_rank' > /dev/null 2>&1
 
-# Baseline HT=0.0 
-# BattleZone, Phoenix, Qbert, NameThisGame
-# BeamRider, Breakout, Enduro, Pong, Seaquest, SpaceInvaders
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'Walker2d-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.0 --sigma $sigma --exp_name 'red20.0|ht0.0|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'Walker2d-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.7 --sigma $sigma --exp_name 'red20.0|ht0.7|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'Walker2d-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.9 --sigma $sigma --exp_name 'red20.0|ht0.9|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'Walker2d-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.95 --sigma $sigma --exp_name 'red20.0|ht0.95|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 
 
-# Population Size, 128 and 256 -> 128
-# Learning Rate, 0.003 and 0.01 -> 0.01 
-
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name AtlantisNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name BattleZoneNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name BreakoutNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name PongNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name QbertNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name SkiingNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name VentureNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name ZaxxonNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|Linear|LR=0.01|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-
-# # 
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name AtlantisNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name BattleZoneNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name BreakoutNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name PongNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name QbertNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name SkiingNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name VentureNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-# srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name ZaxxonNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-
-srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name AmidarNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name BowlingNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name BoxingNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name CentipedeNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name ChopperCommandNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name DemonAttackNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name NameThisGameNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-srun --ntasks=1 --cpus-per-task=120 -q cpu-512 python main.py --n_jobs 128 --population_size 128 --env_name TimePilotNoFrameskip-v4 --seed 0 --learning_rate 0.01  --exp_name 'LR1e-2|HT=0.0|Pop=128|STD=0.02|MLP|' --reward_process 'centered_rank' > /dev/null 2>&1 &
-ncc
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'HalfCheetah-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.0 --sigma $sigma --exp_name 'red20.0|ht0.0|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'HalfCheetah-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.7 --sigma $sigma --exp_name 'red20.0|ht0.7|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'HalfCheetah-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.9 --sigma $sigma --exp_name 'red20.0|ht0.9|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 &
+srun --ntasks=1 --cpus-per-task=$n_jobs -q cpu-512 python main.py --n_jobs $n_jobs --env_name 'HalfCheetah-v3' --seed $seed --learning_rate 0.1 --redundant $red --ht 0.95 --sigma $sigma --exp_name 'red20.0|ht0.95|sigma' --reward_process 'centered_rank' > /dev/null 2>&1 
+done 
+done
