@@ -1,7 +1,7 @@
 
-### Official Implementation for NESHT
+### Official Implementation for NESHT(Hard-Thresholding Meets Evolution Strategies in Reinforcement Learning)
 
-This project implements an evolution algorithm that integrates the hard-thresholding (HT) operator into the well-known natural evolution strategies (NES) algorithm. For the paper, please check [this arXiv link].
+This project implements an evolution algorithm that integrates the hard-thresholding (HT) operator into the well-known natural evolution strategies (NES) algorithm. For the paper, please check [this arixv link](https://arxiv.org/abs/2405.01615v1).
 
 ### Details
 
